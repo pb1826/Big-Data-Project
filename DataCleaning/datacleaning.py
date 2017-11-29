@@ -202,7 +202,17 @@ def check_loc(x):
                         return "INVALID";
 	except ValueError:
 		return "INVALID";
-
+def check_col1(x):
+	try:
+		if(check_null(x)):
+			return "NULL";
+		elif re.match('[1-9][0-9]+',x):
+			return "VALID", check_type(x);
+		else:
+			return "INVALID";
+	except ValueError:
+		return "INVALID";
+		
 def row2csv(row):
 	buffer = cStringIO.StringIO()
 	writer = csv.writer(buffer)

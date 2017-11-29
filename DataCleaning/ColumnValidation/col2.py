@@ -3,7 +3,9 @@ import re
 import numpy as np
 from pyspark import SparkContext
 from csv import reader
-from datetime import datetime
+from datetime import *
+import csv
+import cStringIO
 #check null
 def check_null(x):
 	try:
@@ -211,18 +213,22 @@ def check_col1(x):
 	except ValueError:
 		return "INVALID";
 
-def toCSV(data):
-		return ','.join(str(d) for d in data);
+def row2csv(row):
+	buffer = cStringIO.StringIO()
+	writer = csv.writer(buffer)
+	writer.writerow([str(s).encode("utf-8") for s in row])
+	buffer.seek(0)
+	return buffer.read().strip()
 
 if __name__ == "__main__":
 	sc=SparkContext();
 	data = sc.textFile(sys.argv[1], 1);
+	#converting the data to rdd
+	data = data.mapPartitions(lambda x : reader(x));
 	#extracting header
 	header = data.first();
 	#removing the header from the data
 	data = data.filter(lambda x : x != header);
-	#partitiong the columns
-	data = data.mapPartitions(lambda x : reader(x));
 	#extracting the columb
 	data=data.map(lambda x : (x[0],x[2],check_time(x[2])));
 	#count Valid
