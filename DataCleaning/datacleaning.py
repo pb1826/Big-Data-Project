@@ -3,7 +3,9 @@ import re
 import numpy as np
 from pyspark import SparkContext
 from csv import reader
-from datetime import datetime
+from datetime import *
+import csv
+import cStringIO
 #check null
 def check_null(x):
 	try:
@@ -25,7 +27,7 @@ def check_type(x):
 		return switcher.get(type(x),"NULL")
 	except ValueError:
 		return "INVALID";
-				
+
 
 #x[6],x[8] key code, pd code
 def check_id(x):
@@ -52,7 +54,7 @@ def check_date(x):
 		else:
 			return "INVALID";
 	except ValueError:
-		return "INVALID"; 
+		return "INVALID";
 #time x[4],x[2]
 def check_time(x):
 	#check if the field is null or if it is in 24 hr format
@@ -64,7 +66,7 @@ def check_time(x):
 		else:
 			return "INVALID";
 	except ValueError:
-		return "INVALID";	
+		return "INVALID";
 #x[7]OFNS DSC,x[9] PD DESC,x[12] JURIS_DESC,x[16] Prem type,x[17] Parks NM,x[18] HAD
 def check_desc(x):
 	#check if the field is null or is a string
@@ -86,7 +88,7 @@ def check_boro(x):
 			return "VALID","STRING";
 		else:
 			return "INVALID";
-	
+
 	except ValueError:
 		return "INVALID";
 #CRM_ATPT_CPTD_TD x[10]
@@ -140,7 +142,7 @@ def check_lon(x):
 		else:
 			return "INVALID";
 	except ValueError:
-		return "INVALID"; 
+		return "INVALID";
 def check_lat(x):
 	#checking if the field is null or if it is a lat in between 40 and 41
 	try:
@@ -184,7 +186,7 @@ def check_lawcd(x):
 			return "NULL";
 		elif x in law:
 			return "VALID","STRING";
-		else:	
+		else:
                         return "INVALID";
 	except ValueError:
 		return "INVALID";
@@ -196,60 +198,49 @@ def check_loc(x):
 			return "NULL";
 		elif x in occur:
 			return "VALID", "STRING";
-		else:	
+		else:
                         return "INVALID";
 	except ValueError:
 		return "INVALID";
 
-def toCSV(data):
-		return ','.join(str(d) for d in data);
+def row2csv(row):
+	buffer = cStringIO.StringIO()
+	writer = csv.writer(buffer)
+	writer.writerow([str(s).encode("utf-8") for s in row])
+	buffer.seek(0)
+	return buffer.read().strip()
 
 if __name__ == "__main__":
+	#loading the file
 	sc=SparkContext();
 	data = sc.textFile(sys.argv[1], 1);
+	
+	#converting the data to rdd
+	data = data.mapPartitions(lambda x : reader(x));
+	
 	#extracting header
 	header = data.first();
+	
 	#removing the header from the data
 	data = data.filter(lambda x : x != header);
-	#partitiong the columns
-	data = data.mapPartitions(lambda x : reader(x));
-	#extracting the columb
-	#data=data.map(lambda x : (x[0],x[15],check_loc(x[15])));
+	
 	#csv file out
 	output=data.map(lambda x:(x[0],\
-	x[1],\
-	check_date(x[1]),\
-	x[2],\
-	check_time(x[2]),\
-	x[3],\
-	x[4],\
-	x[5],\
-	x[6],\
-	x[7],\
-	check_desc(x[7]),\
-	x[8],\
-	check_id(x[8]),\
-	x[9],\
-	check_desc(x[9]),\
-	x[10],\
-	check_action(x[10]),\
-	x[11],\
-	x[12],\
-	x[13],\
-	check_boro(x[13]),\
-	x[14],\
-	check_addrpctcd(x[14]),\
-	x[15],\
-	x[16],\
-	x[17],\
-	x[18],\
-	x[19],\
-	x[20],\
-	x[21],\
-	x[22],\
-	x[23],\
-	lat_lon(x[23])));
+	x[1],check_date(x[1]),\
+	x[2],check_time(x[2]),\
+	x[3],x[4],x[5],	x[6],\
+	x[7],check_desc(x[7]),\
+	x[8],check_id(x[8]),\
+	x[9],check_desc(x[9]),\
+	x[10],check_action(x[10]),\
+	x[11],x[12],\
+	x[13],check_boro(x[13]),\
+	x[14],check_addrpctcd(x[14]),\
+	x[15],x[16],x[17],x[18],\
+	x[19],x[20],x[21],x[22],\
+	x[23],lat_lon(x[23])));
 	
+	#filtering for valid data
 	cleaned=output.filter(lambda x: x[2][0]=='VALID' and \
 	x[4][0]=='VALID' and \
 	x[10][0]=='VALID' and \
@@ -258,18 +249,48 @@ if __name__ == "__main__":
 	x[16][0]=='VALID' and \
 	x[20][0]=='VALID' and \
 	x[22][0]=='VALID' and \
-	x[32][0]=='VALID').map(lambda x: (x[0],\
-	x[1],x[3],x[5],x[6],x[7],x[8],x[9],x[11],x[13],x[15],x[17],x[18],x[19],x[21],x[23],\
+	x[32][0]=='VALID')
+
+	#removing nulls
+	# the coordinate features don't have any null values so it is not been considered
+	#cmplt_to_dt
+	cleaned=cleaned.map(lambda x : (x[0],x[1],x[2],x[3],x[4],\
+	(x[5].replace('',datetime.strptime('01/01/1900', "%m/%d/%Y").strftime('%m/%d/%Y'))),\
+	x[6],x[7],x[8],x[9],x[10],x[11],x[12],x[13],x[14],x[15],x[16],x[17],x[18],x[19],x[20],\
+	x[21],x[22],x[23],x[24],x[25],x[26],x[27],x[28],x[29],x[30],x[31],x[32]) if check_null(x[5])==True else (x));
+	#cmplt_to_tm
+	cleaned=cleaned.map(lambda x : (x[0],x[1],x[2],x[3],x[4],x[5],\
+	(x[6].replace('',datetime.strptime('00:00:00', "%H:%M:%S").strftime('%H:%M:%S'))),\
+	x[7],x[8],x[9],x[10],x[11],x[12],x[13],x[14],x[15],x[16],x[17],x[18],x[19],x[20],\
+	x[21],x[22],x[23],x[24],x[25],x[26],x[27],x[28],x[29],x[30],x[31],x[32]) if check_null(x[6])==True else (x));
+	#LOC_OF_OCCUR_DESC
+    	cleaned=cleaned.map(lambda x : (x[0],x[1],x[2],x[3],x[4],x[5],x[6],x[7],x[8],x[9],x[10],x[11],\
+	x[12],x[13],x[14],x[15],x[16],x[17],x[18],x[19],x[20],x[21],x[22],\
+	(x[23].replace('','NA')),\
+	x[24],x[25],x[26],x[27],x[28],x[29],x[30],x[31],x[32]) if check_null(x[23])==True else (x));
+    	#PREM_TYP_DESC
+    	cleaned=cleaned.map(lambda x : (x[0],x[1],x[2],x[3],x[4],x[5],x[6],x[7],x[8],x[9],x[10],x[11],\
+	x[12],x[13],x[14],x[15],x[16],x[17],x[18],x[19],x[20],x[21],x[22],x[23],\
+	(x[24].replace('','NA')),\
+	x[25],x[26],x[27],x[28],x[29],x[30],x[31],x[32]) if check_null(x[24])==True else (x));
+    	#PARKS_NM
+    	cleaned=cleaned.map(lambda x : (x[0],x[1],x[2],x[3],x[4],x[5],x[6],x[7],x[8],x[9],x[10],x[11],\
+	x[12],x[13],x[14],x[15],x[16],x[17],x[18],x[19],x[20],x[21],x[22],x[23],x[24],\
+	(x[25].replace('','NA')),\
+	x[26],x[27],x[28],x[29],x[30],x[31],x[32])if check_null(x[25])==True else (x));
+    	#HADEVELOPT
+    	cleaned=cleaned.map(lambda x : (x[0],x[1],x[2],x[3],x[4],x[5],x[6],x[7],x[8],x[9],x[10],x[11],\
+	x[12],x[13],x[14],x[15],x[16],x[17],x[18],x[19],x[20],x[21],x[22],x[23],x[24],x[25],\
+	(x[26].replace('','NA')),\
+	x[27],x[28],x[29],x[30],x[31],x[32]) if check_null(x[26])==True else (x));
+	
+	#final cleaned data
+	cleaned=cleaned.map(lambda x: (x[0],x[1],x[3],x[5],x[6],x[7],x[8],x[9],x[11],x[13],x[15],x[17],x[18],x[19],x[21],x[23],\
 	x[24],x[25],x[26],x[27],x[28],x[29],x[30],x[31]));
 	
-	file=cleaned.map(toCSV);
-	file.saveAsTextFile("cleaned.csv");
-
-	#cleaned.saveAsTextFile("cl.out");
-	#output.saveAsTextFile("cl.out");
-	#count Valid
-	#count=data.map(lambda x: (x[2],1)).reduceByKey(lambda x,y:x+y).collect();
-	#final=sc.parallelize(count);
-	#output the data
-	#data.saveAsTextFile('dq.out');
-	#final.saveAsTextFile('count.out');
+	#formatting the header
+	header=[item.replace("'",'') for item in header];#get rid of single quotes
+	#appending header to the data
+	cleaned = sc.parallelize([header]).union(cleaned); 
+	cleaned = cleaned.map(row2csv);
+	cleaned.saveAsTextFile("cleaned.csv");
