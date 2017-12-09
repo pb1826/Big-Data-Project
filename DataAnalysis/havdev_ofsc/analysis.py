@@ -37,43 +37,43 @@ if __name__ == "__main__":
 
 	#overall crimes
 	overall = data.map(lambda x: (x[0],x[1],x[6],x[7],x[10],x[11],x[13],x[14],x[17],x[18]));
-	overall = overall.filter(lambda x: x[8] != 'NA')       
-	overall = overall.map(lambda x: (str(x[3]).replace(',', ''),(str(x[8]).replace(',',''))));
+	#overall = overall.filter(lambda x: x[8] != 'NA')       
+	overall = overall.map(lambda x: (str(x[3]).replace(',', ''),(str(x[9]).replace(',',''))));
 	
 	#bronx
 	bronx = data.filter(lambda x : x[13] == 'BRONX');
 	bronx = bronx.map(lambda x: (x[0],x[1],x[6],x[7],x[10],x[11],x[13],x[14],x[17],x[18]));
 	#bronx = bronx.map(lambda x: (x[1].split('/')[2],x[2],x[3],x[4],x[5],x[6],x[8]));
-	bronx = bronx.filter(lambda x: x[8] != 'NA')
-	bronx = bronx.map(lambda x: (str(x[3]).replace(',',''),(str(x[8]).replace(',',''))));
+	#bronx = bronx.filter(lambda x: x[8] != 'NA')
+	bronx = bronx.map(lambda x: (str(x[3]).replace(',',''),(str(x[9]).replace(',',''))));
 	
 	#brooklyn
         brooklyn = data.filter(lambda x : x[13] == 'BROOKLYN');
         brooklyn = brooklyn.map(lambda x: (x[0],x[1],x[6],x[7],x[10],x[11],x[13],x[14],x[17],x[18]));
        	#brooklyn = brooklyn.map(lambda x: (x[1].split('/')[2],x[2],x[3],x[4],x[5],x[6],x[8]));
-	brooklyn = brooklyn.filter(lambda x: x[8] != 'NA')
-	brooklyn = brooklyn.map(lambda x: (str(x[3]).replace(',', ''),(str(x[8]).replace(',',''))));
+	#brooklyn = brooklyn.filter(lambda x: x[8] != 'NA')
+	brooklyn = brooklyn.map(lambda x: (str(x[3]).replace(',', ''),(str(x[9]).replace(',',''))));
 	
 	#manhattan
         manhattan = data.filter(lambda x : x[13] == 'MANHATTAN');
         manhattan = manhattan.map(lambda x: (x[0],x[1],x[6],x[7],x[10],x[11],x[13],x[14],x[17],x[18]));
         #manhattan = manhattan.map(lambda x: (x[1].split('/')[2],x[2],x[3],x[4],x[5],x[6],x[8]));
-	manhattan = manhattan.filter(lambda x: x[8] != 'NA')
-	manhattan = manhattan.map(lambda x: (str(x[3]).replace(',', ''),(str(x[8]).replace(',',''))));
+	#manhattan = manhattan.filter(lambda x: x[8] != 'NA')
+	manhattan = manhattan.map(lambda x: (str(x[3]).replace(',', ''),(str(x[9]).replace(',',''))));
 	
 	#queens
         queens = data.filter(lambda x : x[13] == 'QUEENS');
         queens = queens.map(lambda x: (x[0],x[1],x[6],x[7],x[10],x[11],x[13],x[14],x[17],x[18]));
         #queens = queens.map(lambda x: (x[1].split('/')[2],x[2],x[3],x[4],x[5],x[6],x[8]));
-	queens = queens.filter(lambda x: x[8] != 'NA')
-	queens = queens.map(lambda x: (str(x[3]).replace(',', ''),(str(x[8]).replace(',',''))));
+	#queens = queens.filter(lambda x: x[8] != 'NA')
+	queens = queens.map(lambda x: (str(x[3]).replace(',', ''),(str(x[9]).replace(',',''))));
 	
 	#staten island
 	staten = data.filter(lambda x : x[13] =='STATEN ISLAND');
         staten = staten.map(lambda x: (x[0],x[1],x[6],x[7],x[10],x[11],x[13],x[14],x[17],x[18]));
         #staten = staten.map(lambda x: (x[1].split('/')[2],x[2],x[3],x[4],x[5],x[6],x[8]));
-	staten = staten.filter(lambda x: x[8] != 'NA')
-	staten = staten.map(lambda x: (str(x[3]).replace(',', ''),(str(x[8]).replace(',',''))));
+	#staten = staten.filter(lambda x: x[8] != 'NA')
+	staten = staten.map(lambda x: (str(x[3]).replace(',', ''),(str(x[9]).replace(',',''))));
 
 	#count
 	count_overall = overall.map(lambda x: (x,1)).reduceByKey(lambda x,y:x+y).sortByKey().collect();
