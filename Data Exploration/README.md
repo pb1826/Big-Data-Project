@@ -11,6 +11,7 @@ Cleaned.csv: https://1drv.ms/u/s!AnUiz0e7FgpJwTLXrv4zANzPHHxK
 2. The Jupyter Notebook inside is self-explanatory.
 3. Specific Dates runs directly on the cleaned.csv (link above). This needs to be 
 downloaded into the folder as Github had max limits for file upload.
+4. We have used BokehJs, SeaBorn, matplotlib, numpy, pandas, datetime, time, os. Kindly have these modules installed.
 
 
 
