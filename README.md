@@ -38,11 +38,11 @@ Download and save the dataset on to your local machine. Save as "cleaned.csv"
 	* hadoop fs -copyFromLocal data.csv
 	
 5. Run command: 	
-	Instructions to generate cleaned csv for entire dataset :-
+Instructions to generate cleaned csv for entire dataset :-
   * spark-submit datacleaning.py data.csv
   * hadoop fs -getmerged cleaned.csv cleaned.csv
 	OR
-	Instructions to specific column validation:-
+Instructions to specific column validation:-
   * spark-submit col0.py data.csv #colNumber_of_feature
    
   * hadoop fs -getmerged dq_col0.out dq_col0.out #x[0],valid(x[0]
