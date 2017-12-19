@@ -1,9 +1,8 @@
-# Big-cleaned-Project
+# Big-Data-Project
 
-#### cleanedset
+#### Dataset
 Cleaned.csv: https://1drv.ms/u/s!AnUiz0e7FgpJwTLXrv4zANzPHHxK
-
-#### cleaned Exploration:
+#### Data Analysis:
 
 ##### General Instructions :
 
