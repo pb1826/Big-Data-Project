@@ -5,8 +5,6 @@ NYPD Crime (https://data.cityofnewyork.us/Public-Safety/NYPD-Complaint-Data-Hist
 
 Download and save the dataset on to your local machine. Save as "Data.csv"
 
-#### Report:
-https://docs.google.com/a/nyu.edu/document/d/1RAdEj67bFZf52L_suPGEBeB-xOCpwWNbw9TzMAI2ZRo/edit?usp=sharing
 
 #### Cleaning:
 
