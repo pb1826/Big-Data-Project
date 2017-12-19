@@ -13,9 +13,11 @@ https://docs.google.com/a/nyu.edu/document/d/1WtHlt8fDw-wFNT3u25pt_cLuHJ_yCL7LE5
 
 #### Dataset:
 NYPD Crime (https://data.cityofnewyork.us/Public-Safety/NYPD-Complaint-Data-Historic/qgea-i56i)
+
 Download and save the dataset on to your local machine. Save as "Data.csv"
 
 cleaned.csv: (https://1drv.ms/u/s!AnUiz0e7FgpJwTLXrv4zANzPHHxK)
+
 Download and save the dataset on to your local machine. Save as "cleaned.csv"
 
 #### Cleaning:
@@ -37,11 +39,14 @@ Download and save the dataset on to your local machine. Save as "cleaned.csv"
 4. Upload the file to hadoop from your local using the command:
 	* hadoop fs -copyFromLocal data.csv
 	
-5. Run command: 	
+5. Run command:
+
 Instructions to generate cleaned csv for entire dataset :-
   * spark-submit datacleaning.py data.csv
   * hadoop fs -getmerged cleaned.csv cleaned.csv
+  
 	OR
+	
 Instructions to specific column validation:-
   * spark-submit col0.py data.csv #colNumber_of_feature
    
